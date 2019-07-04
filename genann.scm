@@ -46,6 +46,9 @@
   (define genann-train
     (foreign-lambda void "genann_train" genann f64vector f64vector double))
 
+  (define genann-randomize
+    (foreign-lambda void "genann_randomize" genann))
+
   (define fdopen
     (foreign-lambda (c-pointer "FILE") "fdopen" int c-string))
 
