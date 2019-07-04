@@ -1,0 +1,8 @@
+((author "Diego A. Mundo")
+ (synopsis "Chicken bindings to genann - a simple neural network library in ANSI C")
+ (category misc)
+ (license "Zlib")
+ (components
+  (extension genann
+             (csc-options "./genann_src.c"
+                          -O3 -C -O3))))
