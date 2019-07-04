@@ -12,18 +12,18 @@ threshold: all
 linear: CFLAGS += -Dgenann_act=genann_act_linear
 linear: all
 
-test: test.o genann.o
+test: test.o genann_src.o
 
 check: test
 	./$^
 
-example1: example1.o genann.o
+example1: example1.o genann_src.o
 
-example2: example2.o genann.o
+example2: example2.o genann_src.o
 
-example3: example3.o genann.o
+example3: example3.o genann_src.o
 
-example4: example4.o genann.o
+example4: example4.o genann_src.o
 
 
 clean:
