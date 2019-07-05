@@ -2,16 +2,21 @@
                 genann-copy
                 genann-free!
                 genann-train
+                genann-randomize
                 genann-read
                 genann-write
                 genann-run
+
                 ;; Added
                 make-genann
                 genann?
                 genann-inputs
                 genann-hidden-layers
                 genann-hidden-neurons
-                genann-outputs)
+                genann-outputs
+                genann-total-weights
+                genann-weights
+                genann-weights-set!)
 
   (import scheme
           chicken.foreign
@@ -21,7 +26,12 @@
                 fileno/stdin
                 fileno/stdout)
           (only chicken.gc set-finalizer!)
-          (only chicken.base unless define-record-type port? assert)
+          (only chicken.base
+                unless
+                define-record-type
+                port?
+                assert
+                getter-with-setter)
           (only chicken.memory move-memory!)
           (only srfi-4 make-f64vector))
 
@@ -74,7 +84,7 @@
     (foreign-lambda (c-pointer double) "genann_run" genann f64vector))
 
   (define (genann-run ann inputs)
-    (let* ((len (genann-outputs (genann->ptr ann)))
+    (let* ((len (genann-outputs ann))
            (out (make-f64vector len))
            (res (%genann-run ann inputs)))
       (move-memory! res
@@ -82,22 +92,48 @@
                     (* len (foreign-value "sizeof(double)" size_t)))
       out))
 
+  (define genann-randomize
+    (foreign-lambda void "genann_randomize" genann))
+  ;; Added
   (define (make-genann inputs hidden-layers hidden-neurons outputs)
     (set-finalizer! (genann-init inputs hidden-layers hidden-neurons outputs)
                     genann-free!))
 
   (define genann-inputs
-    (foreign-lambda* int (((c-pointer "genann") ann))
+    (foreign-lambda* int ((genann ann))
       "C_return(ann->inputs);"))
 
   (define genann-hidden-layers
-    (foreign-lambda* int (((c-pointer "genann") ann))
+    (foreign-lambda* int ((genann ann))
       "C_return(ann->hidden_layers);"))
 
   (define genann-hidden-neurons
-    (foreign-lambda* int (((c-pointer "genann") ann))
+    (foreign-lambda* int ((genann ann))
       "C_return(ann->hidden);"))
 
   (define genann-outputs
-    (foreign-lambda* int (((c-pointer "genann") ann))
-      "C_return(ann->outputs);")))
+    (foreign-lambda* int ((genann ann))
+      "C_return(ann->outputs);"))
+
+  (define genann-total-weights
+    (foreign-lambda* int ((genann ann))
+      "C_return(ann->total_weights);"))
+
+  (define (genann-weights-set! ann fvec)
+    (foreign-lambda* void ((genann ann) (f64vector weights))
+      "ann->weight = weights;"))
+
+  (define %genann-weights
+    (foreign-lambda* (c-pointer double) ((genann ann))
+      "C_return(ann->weight);"))
+
+  (define genann-weights
+    (getter-with-setter
+     (lambda (ann) (let* ((len (genann-total-weights ann))
+                          (out (make-f64vector len))
+                          (res (%genann-weights ann)))
+                     (move-memory! res
+                                   out
+                                   (* len (foreign-value "sizeof(double)" size_t)))
+                     out))
+     genann-weights-set!)))
