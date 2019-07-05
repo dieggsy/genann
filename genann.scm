@@ -15,8 +15,8 @@
                 genann-hidden-neurons
                 genann-outputs
                 genann-total-weights
-                genann-weights
-                genann-weights-set!)
+                genann-weight-ref
+                genann-weight-set!)
 
   (import scheme
           chicken.foreign
@@ -119,21 +119,13 @@
     (foreign-lambda* int ((genann ann))
       "C_return(ann->total_weights);"))
 
-  (define (genann-weights-set! ann fvec)
-    (foreign-lambda* void ((genann ann) (f64vector weights))
-      "ann->weight = weights;"))
+  (define genann-weight-set!
+    (foreign-lambda* void ((genann ann) (size_t i) (double x))
+      "ann->weight[i] = x;"))
 
-  (define %genann-weights
-    (foreign-lambda* (c-pointer double) ((genann ann))
-      "C_return(ann->weight);"))
-
-  (define genann-weights
+  (define genann-weight-ref
     (getter-with-setter
-     (lambda (ann) (let* ((len (genann-total-weights ann))
-                          (out (make-f64vector len))
-                          (res (%genann-weights ann)))
-                     (move-memory! res
-                                   out
-                                   (* len (foreign-value "sizeof(double)" size_t)))
-                     out))
-     genann-weights-set!)))
+     (foreign-lambda* double ((genann ann) (size_t i))
+       "C_return(ann->weight[i]);")
+     genann-weight-set!)))
+
