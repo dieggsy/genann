@@ -8,7 +8,9 @@
                 genann-run
 
                 ;; Added
+                genann-init*
                 make-genann
+                genann-copy*
                 genann?
                 genann-inputs
                 genann-hidden-layers
@@ -59,9 +61,6 @@
   (define genann-randomize
     (foreign-lambda void "genann_randomize" genann))
 
-  (define fdopen
-    (foreign-lambda (c-pointer "FILE") "fdopen" int c-string))
-
   (define %genann-read
     (foreign-lambda genann "genann_read" (c-pointer "FILE")))
 
@@ -94,10 +93,16 @@
 
   (define genann-randomize
     (foreign-lambda void "genann_randomize" genann))
+
   ;; Added
-  (define (make-genann inputs hidden-layers hidden-neurons outputs)
+  (define (genann-init* inputs hidden-layers hidden-neurons outputs)
     (set-finalizer! (genann-init inputs hidden-layers hidden-neurons outputs)
                     genann-free!))
+
+  (define make-genann genann-init*)
+
+  (define (genann-copy* genann)
+    (set-finalizer! (genann-copy genann) genann-free!))
 
   (define genann-inputs
     (foreign-lambda* int ((genann ann))
