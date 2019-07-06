@@ -11,8 +11,10 @@
 (define ann (call-with-input-file save-name
               (cut genann-read <>)))
 
+;; Input data for the XOR function.
 (define inputs #(#f64(0 0) #f64(0 1) #f64(1 0) #f64(1 1)))
 
+;; Run the network and see what it predicts.
 (do ((i 0 (add1 i)))
     ((= i 4))
   (printf "Output for ~a is ~a~n"

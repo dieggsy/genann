@@ -33,16 +33,19 @@
                     inputs)
               (cons (alist-ref (car clist) class-names string=?) class))))))))
 
+;; Load data from file
 (define-values (samples input class) (load-data))
 
 (printf "Loaded ~a data points from ~a~n" samples iris-data)
 
+;; 4 inputs. 1 hidden layer(s) of 4 neurons. 3 outputs (1 per class)
 (define ann (make-genann 4 1 4 3))
 
 (define loops 5000)
 
 (printf "Training for ~a loops over data.\n" loops)
 
+;; Train the network with backpropagation.
 (do ((i 0 (add1 i)))
     ((= i loops))
   (do ((j 0 (add1 j)))
