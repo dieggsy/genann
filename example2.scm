@@ -15,7 +15,7 @@
 (let loop ((ann (make-genann 2 1 2 1))
            (last-err 1000.0)
            (count 1))
-  (let ((save (genann-copy ann)))
+  (let ((save (genann-copy* ann)))
     (when (= 0 (modulo count 1000))
       (genann-randomize ann)
       (set! last-err 1000.0))

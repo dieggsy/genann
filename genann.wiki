@@ -1,0 +1,81 @@
+== Genann
+
+[[toc:]]
+
+=== Introduction
+
+Genann is an chicken egg that provides bindings to the
+[[https://github.com/codeplea/genann|genann]] ANSI C neural network library.
+The C library is written only in standard C, the egg is written only in
+'standard' Chicken 5 (what comes included with C5, no eggs).
+
+=== Genann API
+
+<procedure>(genann-init inputs hidden-layers hidden-neurons outputs)</procedure>
+Creates and returns a genann record. Each argument is an integer specifying how
+many of that the genann should have. {{hidden-neurons}} is the number of hidden
+neurons ''per hidden layer.''
+
+<procedure>(genann-copy genann)</procedure>
+Return a new copy of {{genann}}.
+
+<procedure>(genann-free! genann)</procedure>
+Free the memory used by {{genann}}.
+
+<procedure>(genann-train genann inputs desired-outputs learning-rate)</procedure>
+Does a single backpropagation update on {{genann}}, where {{inputs}} and
+{{desired-outputs}} are f64vectors and {{learning-rate}} is a flonum.
+
+<procedure>(genann-run genann inputs)</procedure>
+Runs the feedforward algorithm to calculate the ann's output from f64vector
+{{inputs}}. Returns outputs as an f64vector.
+
+<procedure>(genann-randomize genann)</procedure>
+Sets the weights in {{genann}} randomly. This is called by {{genann-init}}.
+
+<procedure>(genann-read #!optional port)</procedure>
+Read a genann record from file port {{port}}.
+
+<procedure>(genann-write #!optional port)</procedure>
+Write a genann to file port {{port}}.
+
+=== Added procedures
+<procedure>(genann-init* inputs hidden-layers hidden-neurons outputs)</procedure>
+<procedure>(make-genann ...)</procedure>
+Like {{genann-init}}, but sets {{genann-free!}} as a finalizer to the returned
+genann so it can be properly garbage collected. {{make-genann}} is the same
+procedure as {{genann-init*}}.
+
+<procedure>(genann-copy* genann)</procedure>
+Like {{genann-copy}}, but sets {{genann-free!}} as a finalizer to the returned
+genann so it can be properly garbage collected.
+
+<procedure>(genann-inputs genann)</procedure>
+<procedure>(genann-hidden-layers genann)</procedure>
+<procedure>(genann-hidden-neurons genann)</procedure>
+<procedure>(genann-outputs genann)</procedure>
+<procedure>(genann-total-weights genann)</procedure>
+Returns number of inputs, hidden layers, hidden neurons per layer, and outputs,
+respectively, in {{genann}}. These are more or less equivalent to the following
+in C:
+<enscript highlight="c">
+// genann is created with genann_init
+genann->inputs
+genann->hidden_layers
+genann->hidden
+genann->outputs
+genann->total_weights
+</enscript>
+
+<procedure>(genann-weight-set! genann i x)</procedure>
+<procedure>(genann-weight-ref genann i)</procedure>
+Set or get the ith weight of {{genann}}, with the former being a setter for the
+latter, so you can used {{set!}} with {{genann-weight-ref}}. Useful for
+training with random search, as in
+[[https://github.com/dieggsy/genann/blob/master/example2.scm|example2.scm]].
+
+=== Examples
+* [[https://github.com/dieggsy/genann/blob/master/example1.scm|Training using backpropagation]]
+* [[https://github.com/dieggsy/genann/blob/master/example2.scm|Training using random search]]
+* [[https://github.com/dieggsy/genann/blob/master/example3.scm|Loading a saved ANN]]
+* [[https://github.com/dieggsy/genann/blob/master/example4.scm|Training on the IRIS dataset using backpropagation]]
