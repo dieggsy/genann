@@ -69,8 +69,8 @@ genann->total_weights
 
 <procedure>(genann-weight-set! genann i x)</procedure>
 <procedure>(genann-weight-ref genann i)</procedure>
-Set or get the ith weight of {{genann}}, with the former being a setter for the
-latter, so you can used {{set!}} with {{genann-weight-ref}}. Useful for
+Set or get the {{i}}th weight of {{genann}}, with the former being a setter for the
+latter, so you can use {{set!}} with {{genann-weight-ref}}. Useful for
 training with random search, as in
 [[https://github.com/dieggsy/genann/blob/master/example2.scm|example2.scm]].
 
