@@ -3,6 +3,6 @@
  (category misc)
  (license "Zlib")
  (components
-  (c-object genann_src)
+  #;(c-object genann_src)
   (extension genann
-             (objects genann_src))))
+             #;(objects genann_src))))

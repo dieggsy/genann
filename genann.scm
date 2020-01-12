@@ -38,6 +38,7 @@
           (only srfi-4 make-f64vector))
 
   (foreign-declare "#include \"genann.h\"")
+  (foreign-declare "#include \"genann_src.c\"")
 
   (define-record-type genann
     (ptr->genann ptr)
