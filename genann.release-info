@@ -1,6 +1,7 @@
 ;; -*- mode: scheme -*-
 (repo git "git://github.com/dieggsy/genann.git")
 (uri targz "https://github.com/dieggsy/genann/archive/{egg-release}.tar.gz")
+(release "0.2.1")
 (release "0.2.0")
 (release "0.1.0")
 
