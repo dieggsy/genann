@@ -55,6 +55,7 @@ genann so it can be properly garbage collected.
 <procedure>(genann-hidden-neurons genann)</procedure>
 <procedure>(genann-outputs genann)</procedure>
 <procedure>(genann-total-weights genann)</procedure>
+<procedure>(genann-weights genann)</procedure>
 Returns number of inputs, hidden layers, hidden neurons per layer, and outputs,
 respectively, in {{genann}}. These are more or less equivalent to the following
 in C:
@@ -65,6 +66,7 @@ genann->hidden_layers
 genann->hidden
 genann->outputs
 genann->total_weights
+gennan->weight
 </enscript>
 
 <procedure>(genann-weight-set! genann i x)</procedure>

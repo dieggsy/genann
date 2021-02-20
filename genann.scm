@@ -6,22 +6,24 @@
                 genann-read
                 genann-write
                 genann-run
+                genann-inputs
+                genann-hidden-layers
+                genann-hidden-neurons
+                genann-outputs
+                genann-total-weights
+                genann-weights
 
                 ;; Added
                 genann-init*
                 make-genann
                 genann-copy*
                 genann?
-                genann-inputs
-                genann-hidden-layers
-                genann-hidden-neurons
-                genann-outputs
-                genann-total-weights
                 genann-weight-ref
                 genann-weight-set!)
 
   (import scheme
           chicken.foreign
+          chicken.fixnum
           (only chicken.file.posix
                 port->fileno
                 file-close
@@ -125,13 +127,38 @@
     (foreign-lambda* int ((genann ann))
       "C_return(ann->total_weights);"))
 
-  (define genann-weight-set!
+  (define %genann-weights
+    (foreign-lambda* (c-pointer double) ((genann ann))
+      "C_return(ann->weight);"))
+
+  (define (genann-weights ann)
+    (let* ((len (genann-total-weights ann))
+           (out (make-f64vector len))
+           (res (%genann-weights ann)))
+      (move-memory! res
+                    out
+                    (* len (foreign-value "sizeof(double)" size_t)))
+      out))
+
+  (define (genann-weight-set! ann i x)
+    (assert (fx< i (genann-total-weights ann))
+            'genann-weight-set!
+            "out of range"
+            (genann-weights ann)
+            i)
     (foreign-lambda* void ((genann ann) (size_t i) (double x))
       "ann->weight[i] = x;"))
 
   (define genann-weight-ref
     (getter-with-setter
-     (foreign-lambda* double ((genann ann) (size_t i))
-       "C_return(ann->weight[i]);")
+     (lambda (ann i)
+       (assert (fx< i (genann-total-weights ann))
+               'genann-weight-ref
+               "out of range"
+               (genann-weights ann)
+               i)
+       ((foreign-lambda* double ((genann ann) (size_t i))
+          "C_return(ann->weight[i]);")
+        ann i))
      genann-weight-set!)))
 
